@@ -7,6 +7,8 @@
 A hybrid workflow combining Parallel AI Agent architecture with 12-Factor Agent principles for reliable, scalable AI-assisted development.
 
 > 📖 **Read the story behind this project**: [How I Built a Multi-Agent Development Framework in Two Hours (As a Non-Coder)](./STORY.md) - Learn how this framework was created by a non-coder using AI agents to coordinate development.
+>
+> 🧪 **New to testing?** Check out the [Testing Guide for Non-Coders](./TESTING_GUIDE.md) for simple steps to verify everything works.
 
 🔗 **GitHub Repository**: [github.com/EARTHTOEDWARD/parallel-ai-agents](https://github.com/EARTHTOEDWARD/parallel-ai-agents)
 
