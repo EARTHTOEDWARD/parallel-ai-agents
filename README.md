@@ -1,5 +1,9 @@
 # Parallel AI Agent Development Framework
 
+![CI](https://github.com/EARTHTOEDWARD/parallel-ai-agents/actions/workflows/ci.yml/badge.svg)
+![Schema Validation](https://github.com/EARTHTOEDWARD/parallel-ai-agents/actions/workflows/validate-schema.yml/badge.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
 A hybrid workflow combining Parallel AI Agent architecture with 12-Factor Agent principles for reliable, scalable AI-assisted development.
 
 🔗 **GitHub Repository**: [github.com/EARTHTOEDWARD/parallel-ai-agents](https://github.com/EARTHTOEDWARD/parallel-ai-agents)
