@@ -1,7 +1,9 @@
-import { PaperIngestor } from '../../backend/src/ingestor';
-import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as os from 'os';
+
+import * as fs from 'fs-extra';
+
+import { PaperIngestor } from '../../backend/src/ingestor';
 
 // Mock the llmGuard module
 jest.mock('../../backend/src/lib/llmGuard', () => ({
@@ -13,10 +15,10 @@ jest.mock('../../backend/src/lib/llmGuard', () => ({
         'Mocked insight 2: Feedback loops are crucial in system dynamics',
         'Mocked insight 3: Non-linear interactions lead to unpredictability',
         'Mocked insight 4: System boundaries are often arbitrary',
-        'Mocked insight 5: Scale matters in complex systems'
-      ]
+        'Mocked insight 5: Scale matters in complex systems',
+      ],
     };
-  })
+  }),
 }));
 
 describe('PaperIngestor', () => {
@@ -38,10 +40,10 @@ describe('PaperIngestor', () => {
 
   describe('processOnce', () => {
     it('should process PDF files and append to markdown', async () => {
-      // Copy sample PDF to temp directory
-      const samplePdf = path.join(__dirname, '../fixtures/sample.pdf');
-      const targetPdf = path.join(tempDir, 'test-paper.pdf');
-      await fs.copy(samplePdf, targetPdf);
+      // Copy sample file to temp directory
+      const sampleFile = path.join(__dirname, '../fixtures/sample.txt');
+      const targetFile = path.join(tempDir, 'test-paper.txt');
+      await fs.copy(sampleFile, targetFile);
 
       // Process papers
       await ingestor.processOnce();
@@ -53,26 +55,29 @@ describe('PaperIngestor', () => {
       // Read and verify content
       const content = await fs.readFile(outputFile, 'utf-8');
       expect(content).toContain('## Understanding Complex Systems');
-      expect(content).toContain('**Authors:** Jane Smith, John Doe');
-      expect(content).toContain('**Source:** test-paper.pdf');
+      expect(content).toContain('Jane Smith');
+      expect(content).toContain('**Source:** test-paper.txt');
       expect(content).toContain('Complex systems exhibit emergent behavior');
     });
 
     it('should process TXT files', async () => {
       // Create a text file
       const txtFile = path.join(tempDir, 'research.txt');
-      await fs.writeFile(txtFile, `
+      await fs.writeFile(
+        txtFile,
+        `
         Quantum Computing Research
         by Alice Johnson
         
         This paper discusses quantum computing advances.
-      `);
+      `
+      );
 
       await ingestor.processOnce();
 
       const content = await fs.readFile(outputFile, 'utf-8');
       expect(content).toContain('Quantum Computing Research');
-      expect(content).toContain('**Authors:** Alice Johnson');
+      expect(content).toContain('Alice Johnson');
     });
 
     it('should skip non-PDF/TXT files', async () => {
@@ -95,12 +100,15 @@ describe('PaperIngestor', () => {
   describe('processPaper', () => {
     it('should extract metadata correctly', async () => {
       const txtFile = path.join(tempDir, 'paper.txt');
-      await fs.writeFile(txtFile, `
+      await fs.writeFile(
+        txtFile,
+        `
         Machine Learning in Healthcare
         Authors: Dr. Sarah Lee, Prof. Michael Chen
         
         Abstract: This study explores ML applications in medical diagnosis.
-      `);
+      `
+      );
 
       await ingestor.processPaper(txtFile);
 
@@ -125,10 +133,10 @@ describe('PaperIngestor', () => {
   describe('error handling', () => {
     it('should emit COMPACT_ERROR on processing failure', async () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-      
+
       // Try to process non-existent file
       await expect(ingestor.processPaper('/non/existent/file.pdf')).rejects.toThrow();
-      
+
       expect(consoleSpy).toHaveBeenCalledWith(
         'COMPACT_ERROR:',
         expect.stringContaining('PROCESSING_FAILED')

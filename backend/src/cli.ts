@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 
-import { Command } from 'commander';
 import * as path from 'path';
 import * as os from 'os';
+
+import { Command } from 'commander';
+
 import { PaperIngestor } from './ingestor';
 
 const program = new Command();

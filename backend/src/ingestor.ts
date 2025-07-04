@@ -1,7 +1,9 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
+
+import * as fs from 'fs-extra';
 import * as chokidar from 'chokidar';
 import pdf from 'pdf-parse';
+
 import { InsightSummary, PaperMeta, CompactError } from './types';
 import { summariseLLM } from './lib/llmGuard';
 
@@ -24,19 +26,19 @@ export class PaperIngestor {
         const dataBuffer = await fs.readFile(filePath);
         const pdfData = await pdf(dataBuffer);
         text = pdfData.text;
-        
+
         // Extract metadata from PDF
         meta = {
           title: this.extractTitle(pdfData.text) || path.basename(filePath, '.pdf'),
           authors: this.extractAuthors(pdfData.text),
-          source: path.basename(filePath)
+          source: path.basename(filePath),
         };
       } else if (fileExt === '.txt') {
         text = await fs.readFile(filePath, 'utf-8');
         meta = {
           title: this.extractTitle(text) || path.basename(filePath, '.txt'),
           authors: this.extractAuthors(text),
-          source: path.basename(filePath)
+          source: path.basename(filePath),
         };
       } else {
         console.warn(`Skipping unsupported file type: ${filePath}`);
@@ -45,16 +47,16 @@ export class PaperIngestor {
 
       // Generate summary using LLM (guarded with token limits)
       const summary = await summariseLLM(text, meta);
-      
+
       // Append to markdown file
       await this.appendToMarkdown(summary);
-      
+
       console.log(`Successfully processed: ${filePath}`);
     } catch (error) {
       const compactError: CompactError = {
         error: 'PROCESSING_FAILED',
         context: `Failed to process ${filePath}`,
-        action: 'need_supervisor_help'
+        action: 'need_supervisor_help',
       };
       console.error('COMPACT_ERROR:', JSON.stringify(compactError));
       throw error;
@@ -63,7 +65,7 @@ export class PaperIngestor {
 
   private extractTitle(text: string): string {
     // Simple title extraction - look for first line or common patterns
-    const lines = text.split('\n').filter(line => line.trim());
+    const lines = text.split('\n').filter((line) => line.trim());
     if (lines.length > 0) {
       // Check if first line looks like a title (all caps or title case)
       const firstLine = lines[0].trim();
@@ -79,7 +81,7 @@ export class PaperIngestor {
     const authorPatterns = [
       /by\s+([A-Z][a-z]+\s+[A-Z][a-z]+)/g,
       /Authors?:\s*([^\n]+)/i,
-      /([A-Z][a-z]+\s+[A-Z]\.\s+[A-Z][a-z]+)/g
+      /([A-Z][a-z]+\s+[A-Z]\.\s+[A-Z][a-z]+)/g,
     ];
 
     const authors: string[] = [];
@@ -90,33 +92,32 @@ export class PaperIngestor {
         break;
       }
     }
-    
+
     return authors.length > 0 ? authors : ['Unknown'];
   }
 
-
   private async appendToMarkdown(summary: InsightSummary): Promise<void> {
     const content = this.formatMarkdown(summary);
-    
+
     // Ensure directory exists
     await fs.ensureDir(path.dirname(this.outputPath));
-    
+
     // Append to file
     await fs.appendFile(this.outputPath, content + '\n\n');
   }
 
   private formatMarkdown(summary: InsightSummary): string {
     const { meta, insights } = summary;
-    
+
     let markdown = `## ${meta.title}\n`;
     markdown += `- **Authors:** ${meta.authors.join(', ')}\n`;
     markdown += `- **Source:** ${meta.source}\n`;
     markdown += `- **Key insights:**\n`;
-    
-    insights.forEach(insight => {
+
+    insights.forEach((insight) => {
       markdown += `  - ${insight}\n`;
     });
-    
+
     return markdown;
   }
 
@@ -124,11 +125,11 @@ export class PaperIngestor {
     try {
       await fs.ensureDir(this.watchPath);
       const files = await fs.readdir(this.watchPath);
-      
+
       for (const file of files) {
         const filePath = path.join(this.watchPath, file);
         const stat = await fs.stat(filePath);
-        
+
         if (stat.isFile() && (file.endsWith('.pdf') || file.endsWith('.txt'))) {
           await this.processPaper(filePath);
         }
@@ -137,7 +138,7 @@ export class PaperIngestor {
       const compactError: CompactError = {
         error: 'BATCH_PROCESSING_FAILED',
         context: 'Failed to process papers in batch mode',
-        action: 'check_folder_permissions'
+        action: 'check_folder_permissions',
       };
       console.error('COMPACT_ERROR:', JSON.stringify(compactError));
       throw error;
@@ -146,14 +147,14 @@ export class PaperIngestor {
 
   watch(): void {
     console.log(`Watching for papers in: ${this.watchPath}`);
-    
+
     const watcher = chokidar.watch(this.watchPath, {
       ignored: /(^|[/\\])\../, // ignore dotfiles
       persistent: true,
       awaitWriteFinish: {
         stabilityThreshold: 2000,
-        pollInterval: 100
-      }
+        pollInterval: 100,
+      },
     });
 
     watcher
@@ -163,11 +164,11 @@ export class PaperIngestor {
           await this.processPaper(filePath);
         }
       })
-      .on('error', _error => {
+      .on('error', (_error) => {
         const compactError: CompactError = {
           error: 'WATCHER_ERROR',
           context: 'File watcher encountered an error',
-          action: 'restart_watcher'
+          action: 'restart_watcher',
         };
         console.error('COMPACT_ERROR:', JSON.stringify(compactError));
       });
