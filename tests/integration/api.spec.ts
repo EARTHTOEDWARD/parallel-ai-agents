@@ -1,9 +1,10 @@
-import request from 'supertest';
 import { createServer } from 'http';
 import { parse } from 'url';
+import * as path from 'path';
+
+import request from 'supertest';
 import next from 'next';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 
 describe('API Integration Tests', () => {
   let server: any;
@@ -30,7 +31,9 @@ describe('API Integration Tests', () => {
       // Create test markdown file
       const insightsPath = path.join(__dirname, '../../docs/research-insights.md');
       await fs.ensureDir(path.dirname(insightsPath));
-      await fs.writeFile(insightsPath, `
+      await fs.writeFile(
+        insightsPath,
+        `
 ## Test Paper 1
 - **Authors:** Test Author
 - **Source:** test.pdf
@@ -45,17 +48,16 @@ describe('API Integration Tests', () => {
   - Research finding 1
   - Research finding 2
   - Research finding 3
-      `);
+      `
+      );
 
-      const response = await request(server)
-        .get('/api/insights')
-        .expect(200);
+      const response = await request(server).get('/api/insights').expect(200);
 
       expect(response.body).toHaveLength(2);
       expect(response.body[0].meta.title).toBe('Test Paper 1');
       expect(response.body[0].meta.authors).toEqual(['Test Author']);
       expect(response.body[0].insights).toHaveLength(2);
-      
+
       expect(response.body[1].meta.title).toBe('Test Paper 2');
       expect(response.body[1].meta.authors).toEqual(['Another Author', 'Co-Author']);
       expect(response.body[1].insights).toHaveLength(3);
@@ -69,9 +71,7 @@ describe('API Integration Tests', () => {
       const insightsPath = path.join(__dirname, '../../docs/research-insights.md');
       await fs.remove(insightsPath).catch(() => {});
 
-      const response = await request(server)
-        .get('/api/insights')
-        .expect(404);
+      const response = await request(server).get('/api/insights').expect(404);
 
       expect(response.body).toEqual({ error: 'Insights file not found' });
     });
@@ -81,9 +81,7 @@ describe('API Integration Tests', () => {
       await fs.ensureDir(path.dirname(insightsPath));
       await fs.writeFile(insightsPath, '');
 
-      const response = await request(server)
-        .get('/api/insights')
-        .expect(200);
+      const response = await request(server).get('/api/insights').expect(200);
 
       expect(response.body).toEqual([]);
 
@@ -91,17 +89,11 @@ describe('API Integration Tests', () => {
     });
 
     it('should only accept GET requests', async () => {
-      await request(server)
-        .post('/api/insights')
-        .expect(405);
+      await request(server).post('/api/insights').expect(405);
 
-      await request(server)
-        .put('/api/insights')
-        .expect(405);
+      await request(server).put('/api/insights').expect(405);
 
-      await request(server)
-        .delete('/api/insights')
-        .expect(405);
+      await request(server).delete('/api/insights').expect(405);
     });
   });
 });

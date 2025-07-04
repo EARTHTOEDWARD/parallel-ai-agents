@@ -12,6 +12,16 @@ A hybrid workflow combining Parallel AI Agent architecture with 12-Factor Agent 
 
 🔗 **GitHub Repository**: [github.com/EARTHTOEDWARD/parallel-ai-agents](https://github.com/EARTHTOEDWARD/parallel-ai-agents)
 
+## What Was Built: Research Paper Summarizer
+
+The three AI agents successfully implemented a **Research Paper Summarizer** as a demonstration:
+
+- **Backend**: Watches a folder for PDF/text papers, extracts content, and uses OpenAI to generate key insights
+- **Frontend**: Next.js web interface that displays paper summaries with auto-refresh
+- **Tests**: Unit and integration tests to ensure everything works correctly
+
+This serves as a working example of how the parallel agent framework operates in practice.
+
 ## Architecture Overview
 
 This project uses three specialized Claude Opus 4 agents working in parallel:
