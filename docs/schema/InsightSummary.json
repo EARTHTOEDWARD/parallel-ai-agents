@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "InsightSummary",
+  "type": "object",
+  "required": ["meta", "insights"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["title", "authors", "source"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Title of the research paper"
+        },
+        "authors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of paper authors"
+        },
+        "source": {
+          "type": "string",
+          "description": "File path or DOI of the paper"
+        }
+      }
+    },
+    "insights": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 5,
+      "description": "Key insights extracted from the paper (max 5)"
+    }
+  }
+}

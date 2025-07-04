@@ -6,10 +6,11 @@ Manages outputs from multiple Claude agents and coordinates merges
 
 import json
 import subprocess
-from datetime import datetime
+from datetime import datetime, date
 from pathlib import Path
 from typing import Dict, Tuple
 import argparse
+import os
 
 
 class AgentSupervisor:
@@ -98,6 +99,14 @@ class AgentSupervisor:
             "coverage": coverage,
             "diff_stat": diff_output,
         }
+    
+    def load_llm_usage(self) -> Dict:
+        """Load LLM usage data from temporary file"""
+        try:
+            with open("/tmp/llm_usage.json") as f:
+                return json.load(f)
+        except FileNotFoundError:
+            return {"tokens": 0}
 
     def generate_summary(self, statuses: Dict[str, Dict]) -> str:
         """Generate human-readable summary of all agent statuses"""
@@ -159,6 +168,18 @@ class AgentSupervisor:
                     issues.append("linting errors")
                 summary_lines.append(f"- {agent}: {', '.join(issues)}")
 
+        # Add LLM usage information
+        summary_lines.extend(["## LLM Usage", ""])
+        usage_data = self.load_llm_usage()
+        if usage_data:
+            budget = os.getenv('DAILY_TOKEN_BUDGET', '200000')
+            summary_lines.append(
+                f"[SUPERVISOR] {date.today()} :: "
+                f"LLM tokens used today: {usage_data.get('tokens', 0)} / {budget}"
+            )
+        else:
+            summary_lines.append("No LLM usage data available")
+        
         return "\n".join(summary_lines)
 
     def check_merge_conflicts(self, branch: str) -> Tuple[bool, str]:

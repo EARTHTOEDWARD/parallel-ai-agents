@@ -1,0 +1,29 @@
+name: validate-schema
+on: [push, pull_request]
+jobs:
+  schema:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install ajv-cli
+        run: npm i -g ajv-cli
+      
+      - name: Validate test artifacts
+        run: |
+          # Find all JSON files in test output directories
+          find . -name "*.json" -path "*/tmp/*" -o -path "*/coverage/*" | while read -r file; do
+            echo "Validating: $file"
+            # Only validate files that match InsightSummary schema
+            if grep -q '"meta"' "$file" && grep -q '"insights"' "$file"; then
+              ajv validate -s docs/schema/InsightSummary.json -d "$file" || exit 1
+            fi
+          done
+          
+      - name: Validate example JSON files
+        run: |
+          # Validate any example insight files
+          find docs/examples -name "*insights*.json" 2>/dev/null | while read -r file; do
+            echo "Validating example: $file"
+            ajv validate -s docs/schema/InsightSummary.json -d "$file" || exit 1
+          done

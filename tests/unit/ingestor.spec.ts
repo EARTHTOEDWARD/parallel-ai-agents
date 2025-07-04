@@ -3,27 +3,21 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as os from 'os';
 
-// Mock the summariseLLM method
-jest.mock('../../backend/src/ingestor', () => {
-  const actual = jest.requireActual('../../backend/src/ingestor');
-  return {
-    ...actual,
-    PaperIngestor: class extends actual.PaperIngestor {
-      async summariseLLM(text: string, meta: any) {
-        return {
-          meta,
-          insights: [
-            'Mocked insight 1: Complex systems exhibit emergent behavior',
-            'Mocked insight 2: Feedback loops are crucial in system dynamics',
-            'Mocked insight 3: Non-linear interactions lead to unpredictability',
-            'Mocked insight 4: System boundaries are often arbitrary',
-            'Mocked insight 5: Scale matters in complex systems'
-          ]
-        };
-      }
-    }
-  };
-});
+// Mock the llmGuard module
+jest.mock('../../backend/src/lib/llmGuard', () => ({
+  summariseLLM: jest.fn().mockImplementation(async (text: string, meta: any) => {
+    return {
+      meta,
+      insights: [
+        'Mocked insight 1: Complex systems exhibit emergent behavior',
+        'Mocked insight 2: Feedback loops are crucial in system dynamics',
+        'Mocked insight 3: Non-linear interactions lead to unpredictability',
+        'Mocked insight 4: System boundaries are often arbitrary',
+        'Mocked insight 5: Scale matters in complex systems'
+      ]
+    };
+  })
+}));
 
 describe('PaperIngestor', () => {
   let tempDir: string;
