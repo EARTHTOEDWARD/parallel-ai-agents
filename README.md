@@ -2,6 +2,8 @@
 
 A hybrid workflow combining Parallel AI Agent architecture with 12-Factor Agent principles for reliable, scalable AI-assisted development.
 
+🔗 **GitHub Repository**: [github.com/EARTHTOEDWARD/parallel-ai-agents](https://github.com/EARTHTOEDWARD/parallel-ai-agents)
+
 ## Architecture Overview
 
 This project uses three specialized Claude Opus 4 agents working in parallel:
