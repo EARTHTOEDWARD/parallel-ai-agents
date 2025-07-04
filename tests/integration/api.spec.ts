@@ -7,8 +7,8 @@ import next from 'next';
 import * as fs from 'fs-extra';
 
 describe('API Integration Tests', () => {
-  let server: any;
-  let app: any;
+  let server: ReturnType<typeof createServer>;
+  let app: ReturnType<typeof next>;
 
   beforeAll(async () => {
     // Setup Next.js in test mode
@@ -90,10 +90,9 @@ describe('API Integration Tests', () => {
 
     it('should only accept GET requests', async () => {
       await request(server).post('/api/insights').expect(405);
-
       await request(server).put('/api/insights').expect(405);
-
       await request(server).delete('/api/insights').expect(405);
+      expect(true).toBe(true); // Explicit assertion to satisfy jest/expect-expect
     });
   });
 });

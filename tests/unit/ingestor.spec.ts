@@ -7,7 +7,7 @@ import { PaperIngestor } from '../../backend/src/ingestor';
 
 // Mock the llmGuard module
 jest.mock('../../backend/src/lib/llmGuard', () => ({
-  summariseLLM: jest.fn().mockImplementation(async (text: string, meta: any) => {
+  summariseLLM: jest.fn().mockImplementation(async (text: string, meta: unknown) => {
     return {
       meta,
       insights: [
