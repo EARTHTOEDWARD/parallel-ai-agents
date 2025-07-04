@@ -1,0 +1,167 @@
+{
+  "folders": [
+    {
+      "name": "🏠 Project Root",
+      "path": ".."
+    },
+    {
+      "name": "🔧 Backend (backend-opus)",
+      "path": "../backend"
+    },
+    {
+      "name": "🎨 Frontend (frontend-opus)",
+      "path": "../frontend"
+    },
+    {
+      "name": "🧪 Tests (test-opus)",
+      "path": "../tests"
+    },
+    {
+      "name": "📚 Documentation",
+      "path": "../docs"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/.git": false,
+      "**/dist": true,
+      "**/build": true,
+      "**/.agent-cache": true,
+      "**/.agent-logs": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/build": true,
+      "**/coverage": true
+    },
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true
+    },
+    "eslint.workingDirectories": [
+      { "directory": "backend", "changeProcessCWD": true },
+      { "directory": "frontend", "changeProcessCWD": true }
+    ],
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "git.branchProtection": ["main"],
+    "terminal.integrated.defaultProfile.osx": "zsh",
+    "terminal.integrated.defaultProfile.linux": "bash",
+    "terminal.integrated.defaultProfile.windows": "powershell"
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug Backend",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder:🔧 Backend (backend-opus)}",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": ["run", "dev"],
+        "console": "integratedTerminal"
+      },
+      {
+        "name": "Debug Frontend",
+        "type": "chrome",
+        "request": "launch",
+        "url": "http://localhost:3000",
+        "webRoot": "${workspaceFolder:🎨 Frontend (frontend-opus)}/src"
+      },
+      {
+        "name": "Run Tests",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder:🏠 Project Root}",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": ["test"],
+        "console": "integratedTerminal"
+      }
+    ]
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "eamodio.gitlens",
+      "donjayamanne.githistory",
+      "mhutchie.git-graph",
+      "ms-vscode.vscode-typescript-next",
+      "streetsidesoftware.code-spell-checker",
+      "wayou.vscode-todo-highlight",
+      "gruntfuggly.todo-tree",
+      "shardulm94.trailing-spaces",
+      "naumovs.color-highlight",
+      "christian-kohler.path-intellisense",
+      "formulahendry.auto-rename-tag",
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "charliermarsh.ruff",
+      "bierner.markdown-preview-github-styles",
+      "yzhang.markdown-all-in-one",
+      "vitest.explorer",
+      "kavod-io.vscode-jest-test-adapter"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Backend Opus Agent",
+        "type": "shell",
+        "command": "claude-code --role backend --watch backend/ docs/mission-briefs/backend.md",
+        "isBackground": true,
+        "problemMatcher": [],
+        "presentation": {
+          "reveal": "always",
+          "panel": "dedicated",
+          "group": "agents"
+        }
+      },
+      {
+        "label": "Frontend Opus Agent",
+        "type": "shell", 
+        "command": "claude-code --role frontend --watch frontend/ docs/mission-briefs/frontend.md",
+        "isBackground": true,
+        "problemMatcher": [],
+        "presentation": {
+          "reveal": "always",
+          "panel": "dedicated",
+          "group": "agents"
+        }
+      },
+      {
+        "label": "Test Opus Agent",
+        "type": "shell",
+        "command": "claude-code --role tests --watch tests/ docs/mission-briefs/tests.md",
+        "isBackground": true,
+        "problemMatcher": [],
+        "presentation": {
+          "reveal": "always",
+          "panel": "dedicated",
+          "group": "agents"
+        }
+      },
+      {
+        "label": "Supervisor Monitor",
+        "type": "shell",
+        "command": "python scripts/supervisor.py --monitor",
+        "problemMatcher": [],
+        "presentation": {
+          "reveal": "always",
+          "panel": "dedicated"
+        }
+      },
+      {
+        "label": "Launch All Agents",
+        "dependsOn": [
+          "Backend Opus Agent",
+          "Frontend Opus Agent", 
+          "Test Opus Agent"
+        ],
+        "problemMatcher": []
+      }
+    ]
+  }
+}

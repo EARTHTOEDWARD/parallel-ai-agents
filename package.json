@@ -1,0 +1,78 @@
+{
+  "name": "parallel-ai-agents",
+  "version": "1.0.0",
+  "description": "Parallel AI Agent Development Framework",
+  "scripts": {
+    "prepare": "husky install",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "typecheck": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "audit:deps": "npm audit && npm ls",
+    "pre-commit": "lint-staged",
+    "validate": "npm run lint && npm run typecheck && npm run test",
+    "setup": "./scripts/setup.sh",
+    "agent:backend": "claude-code --role backend --watch backend/ docs/mission-briefs/backend.md",
+    "agent:frontend": "claude-code --role frontend --watch frontend/ docs/mission-briefs/frontend.md",
+    "agent:test": "claude-code --role tests --watch tests/ docs/mission-briefs/tests.md",
+    "agents:all": "concurrently -n backend,frontend,test -c bgBlue,bgGreen,bgYellow \"npm run agent:backend\" \"npm run agent:frontend\" \"npm run agent:test\"",
+    "supervisor": "python scripts/supervisor.py --monitor",
+    "supervisor:merge": "python scripts/supervisor.py --merge",
+    "supervisor:prs": "python scripts/supervisor.py --monitor --create-prs"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.50.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.28.0",
+    "eslint-plugin-jest": "^27.4.0",
+    "eslint-plugin-jsx-a11y": "^6.7.0",
+    "eslint-plugin-react": "^7.33.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "husky": "^8.0.3",
+    "jest": "^29.7.0",
+    "lint-staged": "^15.0.0",
+    "prettier": "^3.0.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.2.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ],
+    "*.py": [
+      "black",
+      "ruff check --fix"
+    ]
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/tests",
+      "<rootDir>/backend",
+      "<rootDir>/frontend"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.ts?(x)",
+      "**/?(*.)+(spec|test).ts?(x)"
+    ],
+    "collectCoverageFrom": [
+      "**/*.{ts,tsx,js,jsx}",
+      "!**/*.d.ts",
+      "!**/node_modules/**",
+      "!**/vendor/**"
+    ]
+  }
+}
