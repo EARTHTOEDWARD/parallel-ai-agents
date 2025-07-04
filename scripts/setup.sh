@@ -1,9 +1,16 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
 # Setup script for Parallel AI Agents project
-# Creates agent branches and initializes the workspace
+# Idempotent - safe to run multiple times
 
 echo "🚀 Setting up Parallel AI Agents project..."
+
+# Check if setup was already completed
+if [ -f .setup-complete ]; then
+  echo "✅ Setup already run – skipping."
+  exit 0
+fi
 
 # Check if git is initialized
 if [ ! -d .git ]; then
@@ -62,7 +69,18 @@ git checkout main
 
 # Install dependencies
 echo "📦 Installing dependencies..."
-npm install
+if command -v pnpm &> /dev/null; then
+    corepack enable
+    pnpm install
+else
+    npm install
+fi
+
+# Install husky hooks
+npx husky install
+
+# Mark setup as complete
+touch .setup-complete
 
 echo ""
 echo "✨ Setup complete! Next steps:"

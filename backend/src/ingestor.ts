@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as chokidar from 'chokidar';
 import pdf from 'pdf-parse';
 import { InsightSummary, PaperMeta, CompactError } from './types';
+import { summariseLLM } from './lib/llmGuard';
 
 export class PaperIngestor {
   private watchPath: string;
@@ -42,8 +43,8 @@ export class PaperIngestor {
         return;
       }
 
-      // Generate summary using LLM (stubbed for test agent)
-      const summary = await this.summariseLLM(text, meta);
+      // Generate summary using LLM (guarded with token limits)
+      const summary = await summariseLLM(text, meta);
       
       // Append to markdown file
       await this.appendToMarkdown(summary);
@@ -93,22 +94,6 @@ export class PaperIngestor {
     return authors.length > 0 ? authors : ['Unknown'];
   }
 
-  // This will be mocked by the test agent
-  async summariseLLM(text: string, meta: PaperMeta): Promise<InsightSummary> {
-    // Stub implementation - in real version this would call an LLM API
-    const insights = [
-      'Key insight 1 from the paper',
-      'Key insight 2 from the paper',
-      'Key insight 3 from the paper',
-      'Key insight 4 from the paper',
-      'Key insight 5 from the paper'
-    ];
-
-    return {
-      meta,
-      insights: insights.slice(0, 5) // Ensure max 5 insights
-    };
-  }
 
   private async appendToMarkdown(summary: InsightSummary): Promise<void> {
     const content = this.formatMarkdown(summary);
