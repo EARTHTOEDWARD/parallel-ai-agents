@@ -1,0 +1,38 @@
+# infra/docker-compose.yaml
+version: "3.9"
+
+services:
+  lite_proxy:
+    image: ghcr.io/berriai/litellm:latest
+    command: litellm --config /etc/litellm/config.yaml
+    volumes:
+      - ./lite_llm/config.yaml:/etc/litellm/config.yaml:ro
+    environment:
+      - LITELLM_MASTER_KEY=${LITELLM_MASTER_KEY}
+      - PORT=4000
+    ports:
+      - "4000:4000"
+    depends_on:
+      - helicone_db
+
+  helicone_db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: helicone
+      POSTGRES_PASSWORD: helicone
+      POSTGRES_DB: helicone
+    volumes:
+      - helicone-data:/var/lib/postgresql/data
+
+  helicone_proxy:
+    image: helicone/helicone:latest
+    environment:
+      - DATABASE_URL=postgresql://helicone:helicone@helicone_db:5432/helicone
+    ports:
+      - "3210:3210"
+    depends_on:
+      - helicone_db
+
+volumes:
+  helicone-data:
